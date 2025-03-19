@@ -1,12 +1,11 @@
----
-title: "fastRUVIII"
-output: github_document
+
+# fastRUVIII
 ---
 
 ## Installation 
 
 Install the fastRUVIII R package with devtools: 
 
-```{r}
+```r
 devtools::install_github('Neal-Liu1/fastRUVIII')
 ```
