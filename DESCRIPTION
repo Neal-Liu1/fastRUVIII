@@ -2,13 +2,8 @@ Package: fastRUVIII
 Type: Package
 Title: fastRUVIII: fast & accurate normalization of single cell multi-omics data
 Version: 0.1.0
-Authors@R: c(
-    person(
-      "Neal", "Liu",
-      email = "neal.liu18@gmail.com",
-      role = c("aut", "cre")
-    )
-  )
+Author: Neal Liu <neal.liu18@gmail.com>
+Maintainer: Neal Liu <neal.liu18@gmail.com>
 Description: We propose an enhanced implementation of the original RUVIII 
     algorithm, now able to quickly and efficiently normalize large single cell data from multiple omic platforms
 License: GPL (>= 3)
