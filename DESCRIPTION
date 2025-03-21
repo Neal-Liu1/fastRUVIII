@@ -1,12 +1,11 @@
 Package: fastRUVIII
 Type: Package
-Title: What the Package Does (Title Case)
+Title: fastRUVIII: fast & accurate normalization of single cell multi-omics data
 Version: 0.1.0
 Authors@R: c(
     person(
-      "Jane", "Doe",
-      email = "jane@example.com",
-      role = c("aut", "cre")
+      "Neal", "Liu",
+      email = "neal.liu18@gmail.com"
     )
   )
 Description: More about what it does (maybe more than one line).
