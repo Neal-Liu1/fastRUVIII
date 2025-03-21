@@ -31,7 +31,7 @@ Must be the same length as uv_vars, and set to NA if you dont want to group the 
 should be binned per biological group instead of globally.
 Must be the same length as uv_vars, and set to NA if you dont want to separate the corresponding uv_variable.}
 
-\item{assay}{Which assay to use if using Seurat or SingleCellExperiment}
+\item{assay}{The assay containing your RAW COUNTS if using Seurat or SingleCellExperiment}
 
 \item{sampling_amount}{How much to sample for each biological group. Eg if set to 3,
 then each celltype will have 3 replicates per batch from random sampling}

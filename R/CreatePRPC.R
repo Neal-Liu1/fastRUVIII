@@ -11,14 +11,13 @@
 #' @param separate_bins_by_biology A logical indicating which continuous uv variable
 #' should be binned per biological group instead of globally.
 #' Must be the same length as uv_vars, and set to NA if you dont want to separate the corresponding uv_variable.
-#' @param assay Which assay to use if using Seurat or SingleCellExperiment
+#' @param assay The assay containing your RAW COUNTS if using Seurat or SingleCellExperiment
 #' @param sampling_amount How much to sample for each biological group. Eg if set to 3,
 #' then each celltype will have 3 replicates per batch from random sampling
 #' @param metadata Metadata containing the bio and uv variables. This is a dataframe
 #' with rows as cells and columns as variables
 #' @param continuous_bins Number of bins to bin a continuous uv_variable. Default is 3
-#' @return A BenchmarkMetrics object with the adjusted data, their PCs and runtimes
-#' added to the corresponding slots.
+#' @return A matrix with pseudo-replicates as columns and features/genes as rows.
 #' @export
 
 CreatePRPC <- function(
@@ -84,14 +83,18 @@ CreatePRPC <- function(
 
       # Do prpc separately for each group
       for(j in names(group_indices)){
-        message(paste0('Creating pseudo-replicates for ', variable, ' and ', group_by_vars[i],' ', j, ' \U1F483'))
+        message(paste0('Creating pseudo-replicates for ', variable, ' and ',
+                       group_by_vars[i],' ', j, ' \U1F483'))
         # Give different names for each group
         grouped_variable <- paste0(variable,'_', j)
         indices <- group_indices[[j]]
 
         prpc[[grouped_variable]] <- createPrPc_default(
-          matrix[,indices], bio_vector = bio_labels[indices], uv_vector = uv_vector[indices],
-          sampling = sampling_amount[i], continuous_bins = continuous_bins,
+          matrix[,indices],
+          bio_vector = bio_labels[indices],
+          uv_vector = uv_vector[indices],
+          sampling = sampling_amount[i],
+          continuous_bins = continuous_bins,
           colname_suffix = grouped_variable,
           separate_bins_by_biology = separate_bins_by_biology[i],
           log_transform = FALSE)
