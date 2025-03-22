@@ -24,7 +24,7 @@ average_celltypes_sparse <- function(expr_sparse, batch_info, celltype_info, min
     group <- unique_groups[i]
     group_cells <- which(group_indices == group)
     if (length(group_cells) < min_cells){next}
-    sum_matrix[, i] <- rowSums(expr_sparse[, group_cells, drop = FALSE])
+    sum_matrix[, i] <- Matrix::rowSums(expr_sparse[, group_cells, drop = FALSE])
   }
 
   # Create a vector of cell counts per group

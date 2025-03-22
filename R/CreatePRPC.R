@@ -31,6 +31,16 @@ CreatePRPC <- function(
     metadata = NULL,
     continuous_bins = 3){
 
+  if(class(obj) == 'dgCMatrix'){matrix <- obj}
+  else if(class(obj) == 'Seurat'){
+    matrix <- Seurat::GetAssayData(obj, assay = assay, layer = 'counts')
+    metadata <- obj@meta.data
+  }
+  else if(class(obj) == 'SingleCellExperiment'){
+    matrix <- SummarizedExperiment::assay(obj, assay)
+    metadata <- SummarizedExperiment::colData(obj)
+  }
+  else{stop('Your main object is not a dgCMatrix, Seurat or SingleCelleExperiment \U1F92F')}
 
   if(length(bio_vars) > 1)
   {bio_labels <- do.call(paste0, metadata[bio_vars])}
@@ -48,18 +58,6 @@ CreatePRPC <- function(
   {stop("You inputted a Seurat object but didn't specify an assay \U1F92F")}
   if(class(obj) == 'SingleCellExperiment' && is.null(assay))
   {stop("You inputted a SingleCellExperiment object but didn't specify an assay \U1F92F")}
-
-  if(class(obj) == 'dgCMatrix'){matrix <- obj}
-  else if(class(obj) == 'Seurat'){
-    matrix <- Seurat::GetAssayData(obj, assay = assay, layer = 'counts')
-    metadata <- obj@meta.data
-  }
-  else if(class(obj) == 'SingleCellExperiment'){
-    matrix <- assay(obj, assay)
-    metadata <- colData(obj)
-  }
-  else{stop('Your main object is not a dgCMatrix, Seurat or SingleCelleExperiment \U1F92F')}
-
 
   # Log2 the matrix
   matrix <- log2_sparse(matrix, pseudocount = 1)
@@ -105,8 +103,11 @@ CreatePRPC <- function(
     if(is.na(group_by_vars[i])){
       message(paste0('Creating pseudo-replicates for ', variable,' \U1F483'))
       prpc[[variable]] <- createPrPc_default(
-        matrix, bio_vector = bio_labels, uv_vector = uv_vector,
-        sampling = sampling_amount[i], continuous_bins = continuous_bins,
+        matrix,
+        bio_vector = bio_labels,
+        uv_vector = uv_vector,
+        sampling = sampling_amount,
+        continuous_bins = continuous_bins,
         colname_suffix = variable,
         separate_bins_by_biology = separate_bins_by_biology[i],
         log_transform = FALSE)
