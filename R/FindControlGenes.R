@@ -1,6 +1,5 @@
 
-
-
+# NEED TO FIX ASSAY SPECIFICATION
 
 setGeneric(name = 'FindNCG',
            function(object,
@@ -11,7 +10,7 @@ setGeneric(name = 'FindNCG',
                     sample_fraction = 0.1)
            {standardGeneric('FindNCG')})
 
-
+#' @importClassesFrom Seurat Seurat
 setMethod('FindNCG',
           signature = c(object = 'Seurat',
                         unwanted_variables = 'character',
