@@ -14,4 +14,7 @@ Imports:
     Seurat,
     SingleCellExperiment,
     Matrix,
-    tidyr
+    tidyr,
+    ruv,
+    BiocSingular,
+    stats
