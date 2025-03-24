@@ -16,7 +16,7 @@ FindNCG(
 )
 }
 \arguments{
-\item{object}{A dgCMatrix, Seurat or SingleCellExperiment}
+\item{object}{A dgCMatrix (of raw counts), Seurat or SingleCellExperiment}
 
 \item{unwanted_variables}{A character indicating the names of the unwanted variables
 in your metadata that you want to remove.}
@@ -31,7 +31,7 @@ clustering (more accurate)}
 \item{assay}{The assay containing your RAW COUNTS if using Seurat or SingleCellExperiment}
 
 \item{metadata}{A DATAFRAME of metadata containing the bio and uv variables
-(rows as cells and columns as variables)}
+(rows as cells and columns as variables) (Only needed if inputting a matrix)}
 
 \item{no.ncg}{The number of negative control genes to select}
 
@@ -46,6 +46,7 @@ A character vector of gene names that are identified as negative control genes.
 \description{
 Given a dgCMatrix, Seurat or SingleCellExperiment, use correlation
 analysis to find features/genes that highly associate with unwanted variation
-but does not highly associate with biology. (RUVIII will use these genes to
-estimate the amount of unwanted variation in the data)
+but does not highly associate with biology.
+Expression levels will also be taken into account (genes with higher expression will be preferred more)
+(RUVIII will then use these genes to estimate the amount of unwanted variation in the data)
 }

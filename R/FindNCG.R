@@ -2,10 +2,11 @@
 #' Find negative control genes
 #' @description Given a dgCMatrix, Seurat or SingleCellExperiment, use correlation
 #' analysis to find features/genes that highly associate with unwanted variation
-#' but does not highly associate with biology. (RUVIII will use these genes to
-#' estimate the amount of unwanted variation in the data)
+#' but does not highly associate with biology.
+#' Expression levels will also be taken into account (genes with higher expression will be preferred more)
+#' (RUVIII will then use these genes to estimate the amount of unwanted variation in the data)
 #'
-#' @param object A dgCMatrix, Seurat or SingleCellExperiment
+#' @param object A dgCMatrix (of raw counts), Seurat or SingleCellExperiment
 #' @param bio_variables A character indicating the names of the biological groups in your metadata.
 #' RUVIII will assume the variation in these groups is biology and will not be removed.
 #' If you do not already know some previous biology in your data,
@@ -16,7 +17,7 @@
 #' in your metadata that you want to remove.
 #' @param assay The assay containing your RAW COUNTS if using Seurat or SingleCellExperiment
 #' @param metadata A DATAFRAME of metadata containing the bio and uv variables
-#' (rows as cells and columns as variables)
+#' (rows as cells and columns as variables) (Only needed if inputting a matrix)
 #' @param no.ncg The number of negative control genes to select
 #' @param apply_log Whether to log transform. TRUE by default.
 #' @param sample_fraction How much to sample from your data
@@ -53,6 +54,8 @@ setMethod(
     apply_log,
     sample_fraction)
   {
+    if(is.null(metadata))
+      {stop("You're inputting a Matrix but didn't supply any metadata.")}
     data <- as(object, 'CSparseMatrix')
     if(apply_log)
     {data <- log2_sparse(
@@ -85,7 +88,9 @@ setMethod('FindNCG',
                    apply_log,
                    sample_fraction){
 
-            # Hardcoding main data matrix to assays > RNA > layers > counts
+            if(is.null(assay))
+            {stop("You're inputting a Seurat but didn't specify an assay.")}
+
             if(apply_log){data <- log2_sparse(Seurat::GetAssay(object, assay = assay)$counts, pseudocount = 1)}
             else{data <- Seurat::GetAssay(object, assay = assay)$counts}
 
@@ -98,8 +103,6 @@ setMethod('FindNCG',
             return(names(final_gene_ranks)[1:no.ncg])
 
           })
-
-
 
 
 
