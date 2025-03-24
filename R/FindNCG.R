@@ -37,7 +37,7 @@ setGeneric(name = 'FindNCG',
            {standardGeneric('FindNCG')})
 
 
-
+#' @export
 setMethod(
   'FindNCG',
   signature = c(
@@ -56,7 +56,7 @@ setMethod(
   {
     if(is.null(metadata))
       {stop("You're inputting a Matrix but didn't supply any metadata.")}
-    data <- as(object, 'CSparseMatrix')
+    data <- as(object, 'dgCMatrix')
     if(apply_log)
     {data <- log2_sparse(
       data,
@@ -75,6 +75,7 @@ setMethod(
 
 
 #' @importClassesFrom Seurat Seurat
+#' @export
 setMethod('FindNCG',
           signature = c(object = 'Seurat',
                         unwanted_variables = 'character',
@@ -107,6 +108,7 @@ setMethod('FindNCG',
 
 
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
+#' @export
 setMethod('FindNCG',
           signature = c(object = 'SingleCellExperiment',
                         unwanted_variables = 'character',
@@ -123,8 +125,8 @@ setMethod('FindNCG',
               {stop("You're using a SingleCellExperiment but didn't specify an assay.")}
             if(apply_log)
             {data <- log2_sparse(
-                SummarizedExperiment::assay(object, assay) %>%
-                  as('CSparseMatrix'), pseudocount = 1)}
+                SummarizedExperiment::assay(object, assay) |>
+                  as('dgCMatrix'), pseudocount = 1)}
             else{data <- SummarizedExperiment::assay(object, assay)}
 
             final_gene_ranks <- findNCG_default(
@@ -139,7 +141,6 @@ setMethod('FindNCG',
           })
 
 
-
 findNCG_default <- function(
     matrix,
     unwanted_variables,
@@ -151,7 +152,7 @@ findNCG_default <- function(
   sample_ <- sample(ncol(matrix), sample_num)
   message(paste0('Sampling ', sample_num,' cells from your data'))
 
-  data <- matrix[,sample_] %>% as.matrix()
+  data <- matrix[,sample_] |> as.matrix()
   metadata <- metadata[sample_,]
 
   message('Calculating Spearman correlation for continuous variables & F score for categorical variables')
@@ -166,9 +167,9 @@ findNCG_default <- function(
       corr_data[[name]] <- corr_data[[name]] * (-1)
     }
   }
-  corr_data <- do.call(cbind, corr_data) %>% as.data.frame()
-  rownames(corr_data) <- rownames(object[['RNA']])
-  ranks <- apply(corr_data, 2, rank) %>% as.data.frame()
+  corr_data <- do.call(cbind, corr_data) |> as.data.frame()
+  rownames(corr_data) <- rownames(matrix)
+  ranks <- apply(corr_data, 2, rank) |> as.data.frame()
   ranks$avg_expr <- Rfast::rowmeans(data)
   prod_ranks <- apply(ranks, 1, prod)
   final_gene_ranks <- prod_ranks[base::order(-prod_ranks)]
