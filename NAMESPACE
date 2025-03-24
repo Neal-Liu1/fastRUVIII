@@ -1,7 +1,7 @@
 exportPattern("^[[:alpha:]]+")
 importClassesFrom(Seurat, Seurat)
 importClassesFrom(SingleCellExperiment, SingleCellExperiment)
-importFrom(tidyr,"%>%")
+importFrom("tidyr","%>%")
 importFrom("methods", "as", "is")
 importFrom("stats", "aov")
 importFrom("Matrix", "Matrix", "Diagonal")
