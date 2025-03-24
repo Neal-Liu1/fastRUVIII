@@ -1,4 +1,4 @@
 exportPattern("^[[:alpha:]]+")
 importClassesFrom(Seurat, Seurat)
 importClassesFrom(SingleCellExperiment, SingleCellExperiment)
-
+importFrom(tidyr,"%>%")
