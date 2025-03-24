@@ -3,19 +3,27 @@
 #' all prpc sets and outputs a single matrix.
 #'
 #' @param obj A dgCMatrix, Seurat or SingleCellExperiment
-#' @param bio_vars A character indicating the names of the biological variables
-#' @param uv_vars A character indicating the names of the unwanted variables you want to remove
+#' @param bio_vars A character indicating the names of the biological groups in your metadata.
+#' RUVIII will assume the variation in these groups is biology and will not be removed.
+#' If you do not already know some previous biology in your data,
+#' labels from unsupervised clustering can also be used. If using multi-omic data,
+#' the FindCorrectedMultimodalNeighbours function could be used for joint multi-omic
+#' clustering (more accurate)
+#' @param uv_vars A character indicating the names of the unwanted variables
+#' in your metadata that you want to remove.
 #' @param group_by_vars A character indicating if you want to partition each
-#' unwanted variable by another variable. For example, make libsize replicates for each batch separately.
-#' Must be the same length as uv_vars, and set to NA if you dont want to group the corresponding uv_variable.
+#' unwanted variable by another variable. For example, make libsize replicates
+#' for each batch separately. Must be the same length as uv_vars, and set to NA
+#' if you dont want to group the corresponding uv_variable.
 #' @param separate_bins_by_biology A logical indicating which continuous uv variable
 #' should be binned per biological group instead of globally.
-#' Must be the same length as uv_vars, and set to NA if you dont want to separate the corresponding uv_variable.
+#' Must be the same length as uv_vars, and set to NA if you dont want
+#' to separate the corresponding uv_variable.
 #' @param assay The assay containing your RAW COUNTS if using Seurat or SingleCellExperiment
 #' @param sampling_amount How much to sample for each biological group. Eg if set to 3,
 #' then each celltype will have 3 replicates per batch from random sampling
-#' @param metadata Metadata containing the bio and uv variables. This is a dataframe
-#' with rows as cells and columns as variables
+#' @param metadata A DATAFRAME of metadata containing the bio and uv variables
+#' (rows as cells and columns as variables)
 #' @param continuous_bins Number of bins to bin a continuous uv_variable. Default is 3
 #' @return A matrix with pseudo-replicates as columns and features/genes as rows.
 #' @export
