@@ -16,7 +16,7 @@ average_celltypes_sparse <- function(expr_sparse, batch_info, celltype_info, min
   gene_names <- rownames(expr_sparse)
   unique_groups <- unique(group_indices)
 
-  sum_matrix <- Matrix(0, nrow = nrow(expr_sparse), ncol = length(unique_groups), sparse = TRUE)
+  sum_matrix <- Matrix::Matrix(0, nrow = nrow(expr_sparse), ncol = length(unique_groups), sparse = TRUE)
   colnames(sum_matrix) <- unique_groups
   rownames(sum_matrix) <- gene_names
   # Loop over each group to sum the expression values
@@ -32,7 +32,7 @@ average_celltypes_sparse <- function(expr_sparse, batch_info, celltype_info, min
   cell_counts <- cell_counts[colnames(sum_matrix)]
 
   # Divide the sums by the cell counts to get the averages
-  avg_matrix <- sum_matrix %*% Diagonal(x = 1 / as.numeric(cell_counts))
+  avg_matrix <- sum_matrix %*% Matrix::Diagonal(x = 1 / as.numeric(cell_counts))
 
   #celltype_names <- sapply(colnames(sum_matrix), function(x){unlist(strsplit(x, '[.]'))[1]})
   #colnames(avg_matrix) <- celltype_names
@@ -101,8 +101,8 @@ Sparse_RUV_III <- function (
   message('check the inputs finished')
   ############# RUV-I
   time_eval({
-    Y <- RUV1(Y, eta, ctl, include.intercept = include.intercept)
-    Yrep <- RUV1(Yrep, eta, ctl, include.intercept = include.intercept)
+    Y <- ruv::RUV1(Y, eta, ctl, include.intercept = include.intercept)
+    Yrep <- ruv::RUV1(Yrep, eta, ctl, include.intercept = include.intercept)
   }, "RUV1 on Y and Yrep separately")
   if (ncol(M) >= m)
     newY = Y
@@ -127,7 +127,6 @@ Sparse_RUV_III <- function (
       ############# eigen vectors
       time_eval({
         eigenvector <- BiocSingular::runSVD(
-          x = Y0,
           k = k,
           BSPARAM = BiocSingular::FastAutoParam(),
           center = FALSE,
