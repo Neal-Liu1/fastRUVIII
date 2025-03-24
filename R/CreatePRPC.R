@@ -39,12 +39,12 @@ CreatePRPC <- function(
     metadata = NULL,
     continuous_bins = 3){
 
-  if(class(obj) == 'dgCMatrix'){matrix <- obj}
-  else if(class(obj) == 'Seurat'){
+  if(is(obj,'dgCMatrix')){matrix <- obj}
+  else if(is(obj,'Seurat')){
     matrix <- Seurat::GetAssayData(obj, assay = assay, layer = 'counts')
     metadata <- obj@meta.data
   }
-  else if(class(obj) == 'SingleCellExperiment'){
+  else if(is(obj,'SingleCellExperiment')){
     matrix <- SummarizedExperiment::assay(obj, assay)
     metadata <- SummarizedExperiment::colData(obj)
   }
@@ -60,11 +60,11 @@ CreatePRPC <- function(
   {sampling_amount <- rep(sampling_amount, length(uv_vars))}
   if(length(sampling_amount) != 1 && length(sampling_amount) != length(uv_vars))
   {stop('sampling_amount must be one integer or a vector the same length as uv_vars \U1F92F')}
-  if(class(obj) == 'dgCMatrix' && is.null(metadata))
+  if(is(obj,'dgCMatrix') && is.null(metadata))
   {stop("You need to provide metadata if using just a matrix as the main object \U1F92F")}
-  if(class(obj) == 'Seurat' && is.null(assay))
+  if(is(obj,'Seurat') && is.null(assay))
   {stop("You inputted a Seurat object but didn't specify an assay \U1F92F")}
-  if(class(obj) == 'SingleCellExperiment' && is.null(assay))
+  if(is(obj,'SingleCellExperiment') && is.null(assay))
   {stop("You inputted a SingleCellExperiment object but didn't specify an assay \U1F92F")}
 
   # Log2 the matrix
@@ -146,7 +146,7 @@ createPrPc_default <- function(
   sampled_bio_labels <- paste0(bio_vector, '-', sample_)
 
   # Bin continuous uv
-  if(class(uv_vector) == 'numeric' & separate_bins_by_biology == TRUE){
+  if(is.numeric(uv_vector) & separate_bins_by_biology == TRUE){
     # Create df to bin per celltype
     data <- data.frame(bio_vector = bio_vector, uv_vector = uv_vector)
     binned_data <- data %>%
@@ -155,7 +155,7 @@ createPrPc_default <- function(
       dplyr::ungroup()
     uv_vector <- binned_data$uv_vector
   }
-  if(class(uv_vector) == 'numeric' & separate_bins_by_biology == FALSE){
+  if(is.numeric(uv_vector) & separate_bins_by_biology == FALSE){
     uv_vector <- dplyr::ntile(uv_vector, continuous_bins)
   }
 
