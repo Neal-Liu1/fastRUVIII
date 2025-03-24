@@ -17,4 +17,5 @@ Imports:
     tidyr,
     ruv,
     BiocSingular,
-    stats
+    stats,
+    methods
