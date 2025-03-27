@@ -1,3 +1,4 @@
+
 # Fast log2 transform for sparse matrices
 log2_sparse <- function(matrix, pseudocount = 1){
   require(Matrix)
@@ -54,9 +55,8 @@ residop = function(A, B){
   qr.resid(decomp, A)
 }
 
-#' Runs an expression, times it, and reports the time taken
-#' @param expr An expression to run
-#' @param description A character scalar, describing the operation as a noun
+
+
 time_eval <- function(
     expr,
     description
@@ -72,144 +72,13 @@ time_eval <- function(
   ))
 }
 
+
+
 tological <-function (ctl, n)
 {
   ctl2 = rep(FALSE, n)
   ctl2[ctl] = TRUE
   return(ctl2)
-}
-
-Sparse_RUV_III <- function (
-    Y,
-    Yrep,
-    M,
-    ctl,
-    k = NULL,
-    eta = NULL,
-    Ynord = NULL,
-    eigVec = NULL,
-    include.intercept = TRUE,
-    average = FALSE,
-    return.info = FALSE,
-    inputcheck = FALSE)
-{
-  require(ruv)
-  require(Matrix)
-  m <- nrow(Y)
-  n <- ncol(Y)
-  ctl <- tological(ctl, n)
-  message('check the inputs finished')
-  ############# RUV-I
-  time_eval({
-    Y <- ruv::RUV1(Y, eta, ctl, include.intercept = include.intercept)
-    Yrep <- ruv::RUV1(Yrep, eta, ctl, include.intercept = include.intercept)
-  }, "RUV1 on Y and Yrep separately")
-  if (ncol(M) >= m)
-    newY = Y
-  else if (is.null(k)) {
-    ycyctinv = solve(Y[, ctl] %*% t(Y[, ctl]))
-    newY = M %*% solve(t(M) %*% ycyctinv %*% M) %*% (t(M) %*% ycyctinv) %*% Y
-    fullalpha = NULL
-  }
-  else if (k == 0) {
-    newY = Y
-    fullalpha = NULL
-  }
-  else {
-    if (is.null(Ynord) & is.null(eigVec)) {
-      ############# residual operators
-      message('Y0 and eigVec are not provided')
-
-      time_eval({
-        Y0 <- residop(Yrep, M)
-      }, "residual operator on Yrep")
-
-      ############# eigen vectors
-      time_eval({
-        eigenvector <- BiocSingular::runSVD(
-          k = k,
-          BSPARAM = BiocSingular::FastAutoParam(),
-          center = FALSE,
-          scale = FALSE
-        )$u
-        if (!return.info){
-          rm(Y0)
-          gc()
-        }
-      }, "eigendecomposition on Y0")
-      ############# fullalpha
-      time_eval({
-        fullalpha <- t(eigenvector[, 1:k, drop = FALSE]) %*% Yrep
-      }, "calculation of fullalpha ram")
-    }
-    if (!is.null(Ynord) & is.null(eigVec)) {
-      ############# eigen vectors
-      message('Ynord is provided')
-      time_eval({
-        eigenvector <- BiocSingular::runSVD(
-          x = Ynord %*% t(Ynord),
-          k = k,
-          BSPARAM = BiocSingular::bsparam(),
-          center = TRUE,
-          scale = FALSE
-        )$u
-      }, "eigendecomposition on Ynord")
-      ############# fullalpha
-      time_eval({
-        fullalpha <- t(eigenvector[, 1:k, drop = FALSE]) %*% Yrep
-      }, "obtaining fullalpha")
-    }
-    if (is.null(Ynord) & !is.null(eigVec)) {
-      message('eigVec is provided')
-      time_eval({
-        fullalpha <- t(eigVec[, 1:k, drop = FALSE]) %*% Yrep
-      }, "obtaining fullalpha")
-    }
-    ############# alpha
-    time_eval({
-      alpha <- fullalpha[1:min(k, nrow(fullalpha)), , drop = FALSE]
-      ac <- alpha[, ctl, drop = FALSE]
-    }, "obtaining alpha")
-    ############# Standardize
-
-    # THIS MIGHT BE A PROBLEM
-    time_eval({
-      Y_stand <- scale(Y[ , ctl], center=TRUE, scale=FALSE)
-    }, 'standardization of the data')
-
-
-    ############# W
-    time_eval({
-      W <- Y_stand %*% t(ac) %*% solve(ac %*% t(ac))
-      rm(Y_stand)
-      gc()
-    }, 'calculationg of W')
-    #####################################  data adjustment
-    time_eval({
-      newY <- Y - (W %*% alpha)
-    }, "adjustment of Y")
-  }
-  if (average)
-    newY = ((1 / apply(M, 2, sum)) * t(M)) %*% newY
-  if (!return.info)
-    return(newY)
-  if (is.null(Ynord) & is.null(eigVec))
-    return(list(
-      newY = newY,
-      eigenvector = eigenvector,
-      W = W,
-      Ynord = Y0
-    ))
-  if (is.null(eigVec))
-    return(list(
-      newY = newY,
-      eigenvector = eigenvector,
-      W = W
-    ))
-  else
-    return(list(
-      newY = newY,
-      W = W))
 }
 
 
