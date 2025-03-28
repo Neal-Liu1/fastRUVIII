@@ -5,7 +5,7 @@
 #' transformation (VST) to identify variable genes separately in each batch, then finds their
 #' intersection.
 #'
-#' @param obj An object of class 'BenchmarkMetrics', 'Matrix', 'Seurat', or 'SingleCellExperiment'
+#' @param obj An object of class 'Matrix', 'Seurat', or 'SingleCellExperiment'
 #'        containing gene expression data
 #' @param batch_variable For 'BenchmarkMetrics' and 'Seurat'/'SingleCellExperiment': A character
 #'        string specifying the column name in metadata that identifies batches.
@@ -28,12 +28,6 @@
 #'
 #' @examples
 #' \dontrun{
-#' # For BenchmarkMetrics object
-#' filtered_obj <- FilterLowlyExpressedGenes(
-#'   benchmark_obj,
-#'   batch_variable = "batch",
-#'   ngenes_per_batch = 5000
-#' )
 #'
 #' # For Matrix
 #' batch_ids <- rep(c("batch1", "batch2"), each = 500)
@@ -67,68 +61,6 @@ setGeneric('FilterLowlyExpressedGenes',
                     ngenes_per_batch = 10000,
                     n_not_detected_batch_to_permit = 1){
              standardGeneric('FilterLowlyExpressedGenes')})
-
-#' @rdname FilterLowlyExpressedGenes
-#' @export
-setMethod(
-  'FilterLowlyExpressedGenes',
-  signature = c(obj = 'BenchmarkMetrics'),
-  function(obj,
-           batch_variable,
-           assay,
-           ngenes_per_batch,
-           n_not_detected_batch_to_permit){
-
-    # Input validation
-    if(missing(batch_variable)) {
-      stop("batch_variable must be provided")
-    }
-
-    if(!batch_variable %in% colnames(obj@Metadata)) {
-      stop(paste0("batch_variable '", batch_variable, "' not found in BenchmarkMetrics object metadata"))
-    }
-
-    if(!is.numeric(ngenes_per_batch) || ngenes_per_batch <= 0) {
-      stop("ngenes_per_batch must be a positive integer")
-    }
-
-    if(!is.numeric(n_not_detected_batch_to_permit) || n_not_detected_batch_to_permit < 0) {
-      stop("n_not_detected_batch_to_permit must be a non-negative integer")
-    }
-
-    # Check if there's enough data
-    if(nrow(obj@Raw_data) == 0 || ncol(obj@Raw_data) == 0) {
-      stop("The data matrix in the BenchmarkMetrics object is empty")
-    }
-
-    message('Splitting data by batch \U0001F92F')
-    batch_data_list <- lapply(
-      unique(obj@Metadata[[batch_variable]]),
-      function(batch){
-        obj@Raw_data[, obj@Metadata[[batch_variable]] == batch]})
-
-    message(paste0('Running VST and selecting top ',ngenes_per_batch,' genes per batch \U0001F92F'))
-    batch_hvgs <- lapply(
-      batch_data_list,
-      function(x){
-        Seurat::FindVariableFeatures(
-          as.matrix(x),
-          selection.method = 'vst',
-          nfeatures = ngenes_per_batch)[['variable']]
-      }) %>% as.data.frame()
-
-    message(paste0('Finding intersection between the ',ngenes_per_batch,' genes per batch \U0001F92F'))
-    common_hvgs <- rowSums(batch_hvgs) >= length(unique(obj@Metadata[[batch_variable]]))- n_not_detected_batch_to_permit
-    message(paste0('Found ', sum(common_hvgs), ' HVGs across all batches \U0001F92F'))
-
-    if(sum(common_hvgs) == 0) {
-      warning("No common highly variable genes found across batches. Consider increasing ngenes_per_batch or n_not_detected_batch_to_permit")
-      return(obj)
-    }
-
-    obj@Raw_data <- obj@Raw_data[common_hvgs,]
-    return(obj)
-  })
 
 #' @rdname FilterLowlyExpressedGenes
 #' @param assay Character string specifying the assay to use (for Seurat objects only, default: "RNA")
