@@ -2,7 +2,7 @@
 # Fast log2 transform for sparse matrices
 log2_sparse <- function(matrix, pseudocount = 1){
   require(Matrix)
-  if(!is(matrix, "sparseMatrix")){stop('Your matrix is not a sparse matrix.')}
+  if(!is(matrix, "dgCMatrix")){matrix <- as(matrix, 'dgCMatrix')}
   matrix@x <- log2(matrix@x + pseudocount)
   matrix <- Matrix::drop0(matrix)
   return(matrix)
