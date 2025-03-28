@@ -67,7 +67,8 @@ setMethod(
 
 #' @rdname fastRUVIII
 #' @method fastRUVIII Seurat
-#' @importFrom Seurat GetAssayData DefaultAssay CreateAssayObject
+#' @importFrom Seurat DefaultAssay CreateAssayObject
+#' @importFrom SeuratObject GetAssayData
 #' @export
 setMethod(
   'fastRUVIII',
@@ -76,7 +77,7 @@ setMethod(
            k,
            replicates = NULL,
            control_genes = NULL,
-           assay = NULL,
+           assay = 'RNA',
            apply_log = TRUE) {
 
     # Use default assay if not specified
@@ -85,7 +86,7 @@ setMethod(
     }
 
     # Extract expression matrix
-    matrix <- GetAssayData(object, assay = assay, slot = "counts")
+    matrix <- SeuratObject::GetAssayData(object, assay = assay, layer = "counts")
 
     # Apply log transformation if requested
     if (apply_log) {
@@ -104,7 +105,7 @@ setMethod(
       return.info = TRUE)
 
     # Create a new assay with the corrected data
-    corrected_assay <- CreateAssayObject(counts = t(results$newY))
+    corrected_assay <- Seurat::CreateAssayObject(counts = t(results$newY))
 
     # Add the corrected assay to the Seurat object
     object[["RUVIII"]] <- corrected_assay
@@ -125,7 +126,7 @@ setMethod(
            k,
            replicates = NULL,
            control_genes = NULL,
-           assay = NULL,
+           assay = 'counts',
            apply_log = TRUE) {
 
     # Use default assay if not specified
@@ -177,7 +178,12 @@ Sparse_RUV_III <- function (
   require(Matrix)
   m <- nrow(Y)
   n <- ncol(Y)
-  ctl <- tological(ctl, n)
+  if(is.character(ctl))
+    {ctl <- colnames(Y) %in% ctl}
+  if(is.numeric(ctl))
+    {ctl <- tological(ctl, n)}
+  if(is.logical(ctl))
+    {if(length(ctl) == n){ctl <- ctl}}
   message('check the inputs finished')
   ############# RUV-I
   time_eval({
