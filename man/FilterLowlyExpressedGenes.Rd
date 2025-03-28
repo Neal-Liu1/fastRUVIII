@@ -2,21 +2,12 @@
 % Please edit documentation in R/FilterLowlyExpressedGenes.r
 \name{FilterLowlyExpressedGenes}
 \alias{FilterLowlyExpressedGenes}
-\alias{FilterLowlyExpressedGenes,BenchmarkMetrics-method}
 \alias{FilterLowlyExpressedGenes,Matrix-method}
 \alias{FilterLowlyExpressedGenes,Seurat-method}
 \alias{FilterLowlyExpressedGenes,SingleCellExperiment-method}
 \title{Filter Lowly Expressed Genes Across Multiple Batches}
 \usage{
 FilterLowlyExpressedGenes(
-  obj,
-  batch_variable,
-  assay = NULL,
-  ngenes_per_batch = 10000,
-  n_not_detected_batch_to_permit = 1
-)
-
-\S4method{FilterLowlyExpressedGenes}{BenchmarkMetrics}(
   obj,
   batch_variable,
   assay = NULL,
@@ -49,7 +40,7 @@ FilterLowlyExpressedGenes(
 )
 }
 \arguments{
-\item{obj}{An object of class 'BenchmarkMetrics', 'Matrix', 'Seurat', or 'SingleCellExperiment'
+\item{obj}{An object of class 'Matrix', 'Seurat', or 'SingleCellExperiment'
 containing gene expression data}
 
 \item{batch_variable}{For 'BenchmarkMetrics' and 'Seurat'/'SingleCellExperiment': A character
@@ -86,12 +77,6 @@ genes that are consistently variable across experimental batches. It works by:
 }
 \examples{
 \dontrun{
-# For BenchmarkMetrics object
-filtered_obj <- FilterLowlyExpressedGenes(
-  benchmark_obj,
-  batch_variable = "batch",
-  ngenes_per_batch = 5000
-)
 
 # For Matrix
 batch_ids <- rep(c("batch1", "batch2"), each = 500)
