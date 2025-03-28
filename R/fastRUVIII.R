@@ -14,8 +14,8 @@
 #' @return An adjusted expression matrix or an updated Seurat/SingleCellExperiment object with the
 #'         corrected expression data in a new assay called "RUVIII"
 #'
-#' @importFrom methods setGeneric setMethod
-#' @importFrom Matrix t as
+#' @importFrom methods setGeneric setMethod as
+#' @importFrom Matrix t
 #' @importFrom ruv replicate.matrix
 #'
 #' @export
@@ -115,8 +115,8 @@ setMethod(
 
 #' @rdname fastRUVIII
 #' @method fastRUVIII SingleCellExperiment
-#' @importFrom SingleCellExperiment SingleCellExperiment counts assay
-#' @importFrom SummarizedExperiment assays
+#' @importFrom SingleCellExperiment SingleCellExperiment counts
+#' @importFrom SummarizedExperiment assays assay
 #' @export
 setMethod(
   'fastRUVIII',
@@ -134,7 +134,7 @@ setMethod(
     }
 
     # Extract expression matrix
-    matrix <- assay(object, assay)
+    matrix <- SummarizedExperiment::assay(object, assay)
 
     # Apply log transformation if requested
     if (apply_log) {
