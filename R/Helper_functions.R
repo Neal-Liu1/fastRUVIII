@@ -88,7 +88,7 @@ setGeneric(name = 'find_corr',
 setMethod('find_corr',
           signature = c(variable_vector = 'numeric'),
           function(data, variable_vector){
-            results <- Rfast::correls(y=variable_vector, x=t(data), type = 'spearman') %>% as.data.frame()
+            results <- Rfast::correls(y=variable_vector, x=t(data), type = 'spearman') |> as.data.frame()
             return(as.vector(results$correlation))
           })
 

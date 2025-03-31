@@ -124,7 +124,7 @@ setMethod(
           as.matrix(x),
           selection.method = 'vst',
           nfeatures = min(ngenes_per_batch, nrow(x)))[['variable']]
-      }) %>% as.data.frame()
+      }) |> as.data.frame()
 
     message(paste0('Finding intersection between the ', ngenes_per_batch, ' genes per batch \U0001F92F'))
     common_hvgs <- rowSums(batch_hvgs) >= length(unique_batches) - n_not_detected_batch_to_permit
@@ -208,7 +208,7 @@ setMethod(
           as.matrix(x),
           selection.method = 'vst',
           nfeatures = min(ngenes_per_batch, nrow(x)))[['variable']]
-      }) %>% as.data.frame()
+      }) |> as.data.frame()
 
     message(paste0('Finding intersection between the ', ngenes_per_batch, ' genes per batch \U0001F92F'))
     common_hvgs <- rowSums(batch_hvgs) >= length(unique_batches) - n_not_detected_batch_to_permit
@@ -221,7 +221,7 @@ setMethod(
 
     # Subset the Seurat object
     genes_to_keep <- rownames(count_matrix)[common_hvgs]
-    filtered_obj <- Seurat::subset(obj, features = genes_to_keep)
+    filtered_obj <- subset(obj, features = genes_to_keep)
     return(filtered_obj)
   })
 
@@ -246,8 +246,8 @@ setMethod(
       stop(paste0("batch_variable '", batch_variable, "' not found in colData"))
     }
 
-    if(!assay_name %in% SummarizedExperiment::assayNames(obj)){
-      stop(paste0("assay '", assay_name, "' not found in SingleCellExperiment object"))
+    if(!assay %in% SummarizedExperiment::assayNames(obj)){
+      stop(paste0("assay '", assay, "' not found in SingleCellExperiment object"))
     }
 
     if(!is.numeric(ngenes_per_batch) || ngenes_per_batch <= 0) {
@@ -259,7 +259,7 @@ setMethod(
     }
 
     # Get the expression matrix
-    count_matrix <- SummarizedExperiment::assay(obj, assay_name)
+    count_matrix <- SummarizedExperiment::assay(obj, assay)
 
     # Check if there's enough data
     if(nrow(count_matrix) == 0 || ncol(count_matrix) == 0) {
@@ -293,7 +293,7 @@ setMethod(
           as.matrix(x),
           selection.method = 'vst',
           nfeatures = min(ngenes_per_batch, nrow(x)))[['variable']]
-      }) %>% as.data.frame()
+      }) |> as.data.frame()
 
     message(paste0('Finding intersection between the ', ngenes_per_batch, ' genes per batch \U0001F92F'))
     common_hvgs <- rowSums(batch_hvgs) >= length(unique_batches) - n_not_detected_batch_to_permit
