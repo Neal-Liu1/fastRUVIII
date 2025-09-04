@@ -96,7 +96,7 @@ CreatePRPC <- function(
         indices <- group_indices[[j]]
 
         prpc[[grouped_variable]] <- createPrPc_default(
-          matrix[,indices],
+          matrix[,indices, drop = FALSE],
           bio_vector = bio_labels[indices],
           uv_vector = uv_vector[indices],
           sampling = sampling_amount[i],
@@ -114,7 +114,7 @@ CreatePRPC <- function(
         matrix,
         bio_vector = bio_labels,
         uv_vector = uv_vector,
-        sampling = sampling_amount,
+        sampling = sampling_amount[i],
         continuous_bins = continuous_bins,
         colname_suffix = variable,
         separate_bins_by_biology = separate_bins_by_biology[i],
@@ -141,6 +141,7 @@ createPrPc_default <- function(
   if(!class(bio_vector) %in% c('integer', 'character', 'factor')){
     stop('Your bio_vector is not a continuous or categorical vector.')}
 
+  bio_vector <- droplevels(as.factor(bio_vector))
   # Do sampling
   sample_ <- sample(1:sampling, length(bio_vector), replace = TRUE)
   sampled_bio_labels <- paste0(bio_vector, '-', sample_)
