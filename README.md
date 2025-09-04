@@ -25,3 +25,4 @@ flowchart TD
   F --> W["Assess W"]
   F --> D["Downstream analysis"]
 ```
+<img src="./intro_plot.jpg">
