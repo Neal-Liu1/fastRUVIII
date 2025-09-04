@@ -6,7 +6,7 @@ Install the fastRUVIII R package with devtools:
 devtools::install_github('Neal-Liu1/fastRUVIII')
 ```
 
-
+```mermaid
 flowchart TD
   A[Raw counts<br/>(multi-modal)]
 
@@ -23,3 +23,4 @@ flowchart TD
   P --> F
   F --> W[Assess W]
   F --> D[Downstream analysis]
+```
